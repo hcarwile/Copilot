@@ -430,7 +430,7 @@ function regen(){dirty={email:false,sms:false,crm:false};out();}
 
 async function cpyCur(){const map={email:'dE',sms:'dS',crm:'dC'};const t=$(map[aTab]).value;try{await navigator.clipboard.writeText(t);}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}const b=$('cpyBtn');b.classList.add('ok');b.textContent='Copied';setTimeout(()=>{b.classList.remove('ok');b.textContent='Copy';},1200);}
 
-function openOutlook(){const em=$('cEm').value||'';const subj=encodeURIComponent('Loan Options - Loan Pronto');const body=encodeURIComponent($('dE').value);window.location.href='mailto:'+em+'?subject='+subj+'&body='+body;}
+function openOutlook(){const em=$('cEm').value||'';const subj=encodeURIComponent('Your Loan Plan — Harry @ Loan Pronto');const body=encodeURIComponent($('dE').value);window.location.href='mailto:'+em+'?subject='+subj+'&body='+body;}
 
 function emailSelf(){
 const c=window._c||{},nm=$('cNm').value||'[Name]',gl=$('cGl').value||'',w2=$('cW2').value||'',nt=$('cNt').value||'';
