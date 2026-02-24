@@ -280,7 +280,7 @@ $('hlnP').textContent=hlP>0?fd(hlP):'-';$('hlnTot').textContent=hlTot>0?fd(hlTot
 
 // HELOC: cashout + CC only (no escrow), IO
 const hoT=pn($('hloT').value),hoR=parseFloat($('hloR').value)||0;
-const hoL=co+ccDollar;$('hloLA').textContent=fd(hoL);
+const hoL=co+cc2nd;$('hloLA').textContent=fd(hoL);
 let hoP=0,hoTot=0;if(hoL>0&&hoR>0){hoP=hoL*(hoR/100/12);hoTot=hoP+mp;}
 $('hloP').textContent=hoP>0?fd(hoP):'-';$('hloTot').textContent=hoTot>0?fd(hoTot):'-';const hoS=hoTot>0?-(hoTot-cur):null;
 
