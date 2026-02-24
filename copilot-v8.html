@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Co-Pilot</title>
+<style>
+:root{--bg:#fff;--bg2:#f5f6f8;--bdr:#dfe1e6;--tx:#111827;--tx2:#374151;--tx3:#6b7280;--ib:#d1d5db;--foc:#2563eb;--fb:#eff6ff;--grn:#15803d;--gb:#16a34a;--gbg:#f0fdf4;--red:#dc2626;--rbg:#fef2f2;--c1:#1d4ed8;--c1b:#eff6ff;--c1d:#93c5fd;--c2:#7c3aed;--c2b:#f5f3ff;--c2d:#c4b5fd;--c3:#b45309;--c3b:#fffbeb;--c3d:#fcd34d;--c4:#047857;--c4b:#ecfdf5;--c4d:#6ee7b7;--star:#eab308;--sans:Calibri,'Segoe UI',sans-serif;--r:6px;}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:var(--sans);background:var(--bg2);color:var(--tx);height:100vh;overflow:hidden;font-size:14px;}
+header{display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:44px;background:#fff;border-bottom:1px solid var(--bdr);}
+.logo{font-weight:700;font-size:16px;}.logo b{color:var(--foc);}
+.hdr-r{display:flex;align-items:center;gap:14px;}
+.tmr{font-size:18px;font-weight:700;color:var(--tx3);font-variant-numeric:tabular-nums;}.tmr.on{color:var(--gb);}
+.btn{padding:5px 16px;border:1.5px solid var(--bdr);background:#fff;color:var(--tx2);border-radius:var(--r);cursor:pointer;font-size:12px;font-weight:600;font-family:var(--sans);}.btn:hover{border-color:var(--foc);color:var(--foc);}
+
+.main{display:grid;grid-template-columns:1fr 400px;height:calc(100vh - 44px);}
+.sheet{overflow-y:auto;padding:14px 18px;}.sheet::-webkit-scrollbar{width:5px;}.sheet::-webkit-scrollbar-thumb{background:var(--bdr);border-radius:3px;}
+
+/* Inputs */
+.ibar{display:flex;gap:10px;margin-bottom:14px;align-items:stretch;}
+.ig{background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;flex:1;}.ig-w{flex:1.4;}
+.igt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:8px;}
+.row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}.row:last-child{margin-bottom:0;}
+.lbl{font-size:11.5px;font-weight:600;color:var(--tx2);min-width:80px;white-space:nowrap;flex-shrink:0;}
+.inp{flex:1;background:#fff;border:1.5px solid var(--ib);border-radius:5px;padding:5px 8px;color:var(--tx);font-family:var(--sans);font-size:13px;font-weight:500;outline:0;min-width:0;}.inp:focus{border-color:var(--foc);box-shadow:0 0 0 2px rgba(37,99,235,.08);}.inp::placeholder{color:#9ca3af;font-weight:400;}
+.inp-n{font-weight:600;text-align:right;width:100px;flex:none;}
+.inp-dis{background:#f3f4f6;color:var(--tx3);cursor:default;}
+select.inp{cursor:pointer;appearance:auto;}
+.pct{font-size:11px;font-weight:600;color:var(--tx3);}
+.ltv-bar{display:flex;gap:16px;padding-top:6px;margin-top:6px;border-top:1px solid var(--bdr);}
+.ltv-i{display:flex;align-items:baseline;gap:5px;}.ltv-l{font-size:11px;font-weight:700;color:var(--tx3);}
+.lv{font-weight:700;font-size:15px;}.lv-ok{color:var(--grn);}.lv-w{color:var(--c3);}.lv-b{color:var(--red);}
+.nta{width:100%;background:#fff;border:1.5px solid var(--ib);border-radius:5px;padding:5px 8px;color:var(--tx);font-family:var(--sans);font-size:12px;outline:0;resize:none;flex:1;min-height:100%;max-height:100%;overflow-y:auto;}.nta:focus{border-color:var(--foc);}.nta::placeholder{color:#9ca3af;}
+
+/* Products */
+.products{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.prod{background:#fff;border:1.5px solid var(--bdr);border-radius:8px;overflow:hidden;display:flex;flex-direction:column;}
+.prod-h{padding:5px 8px;font-size:10.5px;font-weight:700;letter-spacing:.1px;border-bottom:1.5px solid;display:flex;align-items:center;gap:4px;min-height:32px;}
+.ph1{background:var(--c1b);color:var(--c1);border-color:var(--c1d);}
+.ph2{background:var(--c2b);color:var(--c2);border-color:var(--c2d);}
+.ph3{background:var(--c3b);color:var(--c3);border-color:var(--c3d);}
+.ph4{background:var(--c4b);color:var(--c4);border-color:var(--c4d);}
+.pchk{width:14px;height:14px;accent-color:var(--foc);cursor:pointer;flex-shrink:0;}
+.prod-h span{flex:1;line-height:1.2;}
+.star{cursor:pointer;font-size:15px;line-height:1;color:var(--ib);flex-shrink:0;user-select:none;}.star:hover{color:var(--star);}.star.on{color:var(--star);}
+.prod-b{padding:8px 10px;flex:1;}
+.pr{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;gap:4px;}.pr:last-child{margin-bottom:0;}
+.pr-l{font-size:10px;font-weight:500;color:var(--tx3);line-height:1.3;flex:1;}.pr-v{font-weight:700;font-size:12.5px;color:var(--tx);white-space:nowrap;}
+.pri{font-weight:700;font-size:13px;text-align:right;width:55px;padding:3px 5px;border:1.5px solid var(--ib);border-radius:4px;outline:0;color:var(--tx);background:#fff;font-family:var(--sans);}.pri:focus{border-color:var(--foc);}
+.prod-f{padding:7px 10px;background:var(--bg2);border-top:1.5px solid var(--bdr);}
+.pft{display:flex;align-items:baseline;justify-content:space-between;gap:4px;}.pft-l{font-size:9.5px;font-weight:700;color:var(--tx2);line-height:1.2;}.pft-v{font-weight:700;font-size:16px;white-space:nowrap;}
+.pfs{display:flex;align-items:baseline;justify-content:space-between;margin-top:3px;}.pfs-l{font-size:10px;font-weight:600;color:var(--tx3);text-transform:uppercase;letter-spacing:.4px;}.pfs-v{font-weight:700;font-size:13px;}
+.sv-p{color:var(--grn);}.sv-n{color:var(--red);}
+.prod.best-calc{border-color:var(--gb);box-shadow:0 0 0 2px rgba(22,163,74,.12);}.prod.best-calc .prod-f{background:var(--gbg);}
+
+/* Bottom */
+.bottom{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+.bc{background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;}
+.bct{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--tx3);margin-bottom:8px;}
+.ccr{display:flex;align-items:center;gap:5px;margin-bottom:5px;font-size:12px;}
+.ccr-l{color:var(--tx2);font-weight:500;min-width:110px;font-size:11px;white-space:nowrap;}
+.ccr-inp{font-weight:600;width:55px;text-align:right;padding:3px 5px;border:1.5px solid var(--ib);border-radius:4px;outline:0;font-size:12px;color:var(--tx);font-family:var(--sans);}.ccr-inp:focus{border-color:var(--foc);}
+.ccr-tog{font-size:10px;font-weight:700;padding:2px 6px;border:1.5px solid var(--bdr);border-radius:10px;cursor:pointer;color:var(--tx3);background:#fff;min-width:22px;text-align:center;}.ccr-tog:hover{border-color:var(--tx3);}
+.ccr-val{font-weight:600;font-size:12px;color:var(--tx);margin-left:auto;}
+.cc-tot{border-top:1.5px solid var(--bdr);padding-top:6px;margin-top:6px;display:flex;justify-content:space-between;}.cc-tot-l{font-weight:700;color:var(--tx);font-size:12px;}.cc-tot-v{font-weight:700;font-size:15px;color:var(--tx);}
+.va-section{border-top:1.5px solid var(--bdr);padding-top:8px;margin-top:8px;}
+.va-row{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+.va-chk{width:14px;height:14px;accent-color:var(--foc);cursor:pointer;}
+.va-lbl{font-size:12px;font-weight:600;color:var(--tx2);}
+.va-sel{font-size:12px;padding:3px 6px;border:1.5px solid var(--ib);border-radius:4px;outline:0;font-family:var(--sans);color:var(--tx);width:100%;}
+.va-fee-d{font-size:11px;color:var(--tx3);font-weight:500;margin-top:2px;}
+
+.dt{width:100%;border-collapse:collapse;}.dt th{font-size:10px;font-weight:700;color:var(--tx3);text-transform:uppercase;letter-spacing:.3px;text-align:left;padding:4px 5px;border-bottom:1.5px solid var(--bdr);}.dt td{padding:3px 4px;}
+.dt input{width:100%;background:#fff;border:1.5px solid var(--ib);border-radius:4px;padding:4px 6px;color:var(--tx);font-family:var(--sans);font-size:12px;outline:0;}.dt input:focus{border-color:var(--foc);}
+.dt-rm{width:22px;height:22px;background:0;border:0;color:var(--tx3);cursor:pointer;border-radius:3px;font-size:12px;display:flex;align-items:center;justify-content:center;}.dt-rm:hover{color:var(--red);background:var(--rbg);}
+.d-add{background:0;border:1.5px dashed var(--bdr);color:var(--tx3);padding:3px 10px;border-radius:4px;cursor:pointer;font-size:11px;font-weight:600;margin-top:5px;font-family:var(--sans);}.d-add:hover{border-color:var(--foc);color:var(--foc);}
+.d-tots{margin-top:6px;padding-top:5px;border-top:1.5px solid var(--bdr);font-size:11.5px;color:var(--tx2);line-height:1.9;}.d-tots b{font-weight:700;color:var(--tx);}
+
+/* Right */
+.right{border-left:1px solid var(--bdr);display:flex;flex-direction:column;background:#fff;}
+.tabs{display:flex;border-bottom:1px solid var(--bdr);}.tab{flex:1;padding:10px 0;font-size:12px;font-weight:700;color:var(--tx3);cursor:pointer;border-bottom:2px solid transparent;text-align:center;}.tab:hover{color:var(--tx2);}.tab.on{color:var(--foc);border-bottom-color:var(--foc);}
+.tc{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.tp{display:none;flex:1;flex-direction:column;overflow:hidden;}.tp.on{display:flex;}
+.draft{flex:1;padding:14px 16px;border:0;outline:0;font-family:var(--sans);font-size:13px;line-height:1.7;color:var(--tx);resize:none;white-space:pre-wrap;background:#fff;overflow-y:auto;}.draft::placeholder{color:#9ca3af;}
+.tbar{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--bdr);background:var(--bg2);flex-shrink:0;flex-wrap:wrap;}
+.tb{padding:7px 10px;border:1.5px solid var(--bdr);background:#fff;color:var(--tx);border-radius:var(--r);cursor:pointer;font-size:11px;font-weight:700;font-family:var(--sans);}.tb:hover{border-color:var(--foc);color:var(--foc);}.tb.ok{border-color:var(--gb);color:var(--grn);background:var(--gbg);}
+.tb-a{border-color:var(--foc);color:var(--foc);background:var(--fb);}.tb-a:hover{background:var(--foc);color:#fff;}
+.tb-o{border-color:#7c3aed;color:#7c3aed;background:#f5f3ff;}.tb-o:hover{background:#7c3aed;color:#fff;}
+</style>
+</head>
+<body>
+<header><div class="logo">Co<b>-</b>Pilot</div><div class="hdr-r"><div class="tmr" id="tmr">0:00</div><button class="btn" onclick="newCall()">New Call</button></div></header>
+<div class="main">
+<div class="sheet">
+
+<!-- INPUTS -->
+<div class="ibar">
+<div class="ig ig-w"><div class="igt">Client</div>
+<div class="row"><span class="lbl">Name</span><input class="inp" id="cNm" placeholder="First name" oninput="rc()"></div>
+<div class="row"><span class="lbl">Email</span><input class="inp" id="cEm" placeholder="client@email.com" type="email"></div>
+<div class="row"><span class="lbl">Goals</span><select class="inp" id="cGl" onchange="rc()"><option value="">Select...</option><option>Rate/Term</option><option>Cash Out</option><option>Purchase</option><option>Other</option></select></div>
+<div class="row"><span class="lbl">Employment</span><select class="inp" id="cW2"><option value="">Select...</option><option>W2</option><option>Self-Employed</option><option>Retired</option><option>Other</option></select></div>
+</div>
+<div class="ig ig-w"><div class="igt">Property & Mortgage</div>
+<div class="row"><span class="lbl">Home Value</span><input class="inp inp-n" id="cHV" placeholder="0" oninput="rc()"></div>
+<div class="row"><span class="lbl">Mortgage Balance</span><input class="inp inp-n" id="cBal" placeholder="0" oninput="rc()"></div>
+<div class="row"><span class="lbl">Mortgage Payment</span><input class="inp inp-n" id="cMP" placeholder="w/ escrow" oninput="rc()"></div>
+<div class="row"><span class="lbl">Escrow per month</span><input class="inp inp-n" id="cEsc" placeholder="0" oninput="rc()"></div>
+<div class="ltv-bar"><div class="ltv-i"><span class="ltv-l">LTV</span><span class="lv" id="dLTV">-</span></div><div class="ltv-i"><span class="ltv-l">CLTV</span><span class="lv" id="dCLTV">-</span></div></div>
+</div>
+<div class="ig"><div class="igt">Cash & Debt</div>
+<div class="row"><span class="lbl" style="min-width:100px;" id="dpLbl">Est. Monthly Debt</span><input class="inp inp-n" id="cDP" placeholder="0" oninput="rc()"></div>
+<div id="dpHint" style="font-size:10px;color:var(--tx3);font-style:italic;display:none;margin-bottom:4px;">Using itemized debts below</div>
+<div class="row"><span class="lbl" style="min-width:100px;">Cash Out</span><input class="inp inp-n" id="cCO" placeholder="0" oninput="rc()"></div>
+</div>
+<div class="ig" style="display:flex;flex-direction:column;min-width:160px;overflow:hidden;"><div class="igt">Internal Notes (not sent to client)</div><textarea class="nta" id="cNt" placeholder="Internal only..."></textarea></div>
+</div>
+
+<!-- PRODUCTS -->
+<div class="products">
+<div class="prod" id="pHln"><div class="prod-h ph1"><input type="checkbox" class="pchk" id="chkHln" onchange="rc()"><span>Fixed Rate Home Equity Loan</span><span class="star" data-p="hln" onclick="togStar(this)">☆</span></div>
+<div class="prod-b">
+<div class="pr"><span class="pr-l">Term</span><span><input class="pri" id="hlnT" value="30" oninput="rc()"><span class="pct">yr</span></span></div>
+<div class="pr"><span class="pr-l">Rate</span><span><input class="pri" id="hlnR" placeholder="0" oninput="rc()"><span class="pct">%</span></span></div>
+<div class="pr"><span class="pr-l">Loan Amount<br><span style="font-size:8.5px;color:#9ca3af">Incl. financed closing costs</span></span><span class="pr-v" id="hlnLA">-</span></div>
+<div class="pr"><span class="pr-l">Monthly Payment</span><span class="pr-v" id="hlnP">-</span></div>
+</div>
+<div class="prod-f"><div class="pft"><span class="pft-l">Monthly Housing Cost<br><span style="font-size:8.5px;font-weight:500;color:var(--tx3)">Incl. current mortgage</span></span><span class="pft-v" id="hlnTot" style="color:var(--c1)">-</span></div><div class="pfs"><span class="pfs-l">Savings</span><span class="pfs-v" id="sHln">-</span></div></div></div>
+
+<div class="prod" id="pHlo"><div class="prod-h ph2"><input type="checkbox" class="pchk" id="chkHlo" onchange="rc()"><span>Interest Only HELOC</span><span class="star" data-p="hlo" onclick="togStar(this)">☆</span></div>
+<div class="prod-b">
+<div class="pr"><span class="pr-l">Term</span><span><input class="pri" id="hloT" value="10" oninput="rc()"><span class="pct">yr</span></span></div>
+<div class="pr"><span class="pr-l">Rate</span><span><input class="pri" id="hloR" placeholder="0" oninput="rc()"><span class="pct">%</span></span></div>
+<div class="pr"><span class="pr-l">Loan Amount<br><span style="font-size:8.5px;color:#9ca3af">Incl. financed closing costs</span></span><span class="pr-v" id="hloLA">-</span></div>
+<div class="pr"><span class="pr-l">Monthly Payment</span><span class="pr-v" id="hloP">-</span></div>
+</div>
+<div class="prod-f"><div class="pft"><span class="pft-l">Monthly Housing Cost<br><span style="font-size:8.5px;font-weight:500;color:var(--tx3)">Incl. current mortgage</span></span><span class="pft-v" id="hloTot" style="color:var(--c2)">-</span></div><div class="pfs"><span class="pfs-l">Savings</span><span class="pfs-v" id="sHlo">-</span></div></div></div>
+
+<div class="prod" id="pCnv"><div class="prod-h ph3"><input type="checkbox" class="pchk" id="chkCnv" checked onchange="rc()"><span>VA & Conventional Refinance</span><span class="star" data-p="cnv" onclick="togStar(this)">☆</span></div>
+<div class="prod-b">
+<div class="pr"><span class="pr-l">Term</span><span><input class="pri" id="cnvT" value="30" oninput="rc()"><span class="pct">yr</span></span></div>
+<div class="pr"><span class="pr-l">Rate</span><span><input class="pri" id="cnvR" placeholder="0" oninput="rc()"><span class="pct">%</span></span></div>
+<div class="pr"><span class="pr-l">Loan Amount<br><span style="font-size:8.5px;color:#9ca3af">Incl. financed closing costs</span></span><span class="pr-v" id="cnvLA">-</span></div>
+<div class="pr"><span class="pr-l">Monthly P&I</span><span class="pr-v" id="cnvP">-</span></div>
+</div>
+<div class="prod-f"><div class="pft"><span class="pft-l">Total Monthly Payment</span><span class="pft-v" id="cnvTot" style="color:var(--c3)">-</span></div><div class="pfs"><span class="pfs-l">Savings</span><span class="pfs-v" id="sCnv">-</span></div></div></div>
+
+<div class="prod" id="pFha"><div class="prod-h ph4"><input type="checkbox" class="pchk" id="chkFha" onchange="rc()"><span>FHA Refinance</span><span class="star" data-p="fha" onclick="togStar(this)">☆</span></div>
+<div class="prod-b">
+<div class="pr"><span class="pr-l">Term</span><span><input class="pri" id="fhaT" value="30" oninput="rc()"><span class="pct">yr</span></span></div>
+<div class="pr"><span class="pr-l">Rate</span><span><input class="pri" id="fhaR" placeholder="0" oninput="rc()"><span class="pct">%</span></span></div>
+<div class="pr"><span class="pr-l">Loan Amount<br><span style="font-size:8.5px;color:#9ca3af">Incl. financed closing costs</span></span><span class="pr-v" id="fhaLA">-</span></div>
+<div class="pr"><span class="pr-l">Monthly P&I + MI</span><span class="pr-v" id="fhaP">-</span></div>
+</div>
+<div class="prod-f"><div class="pft"><span class="pft-l">Total Monthly Payment</span><span class="pft-v" id="fhaTot" style="color:var(--c4)">-</span></div><div class="pfs"><span class="pfs-l">Savings</span><span class="pfs-v" id="sFha">-</span></div></div></div>
+</div>
+
+<!-- BOTTOM -->
+<div class="bottom">
+<div class="bc"><div class="bct">Closing Cost Estimates</div>
+<div class="ccr"><span class="ccr-l">Estimated Closing Costs</span><input class="ccr-inp" id="ccVal" value="2.5" oninput="rc()"><span class="ccr-tog" id="ccTog" onclick="togCC()">%</span><span class="ccr-val" id="ccOut">-</span></div>
+<div class="ccr"><span class="ccr-l">Escrow Months</span><input class="ccr-inp" id="ccEscMo" value="3" oninput="rc()" style="width:40px;"><span class="ccr-val" id="ccEscOut">-</span></div>
+<div class="cc-tot"><span class="cc-tot-l">Total (Refi only)</span><span class="cc-tot-v" id="ccT">-</span></div>
+<div class="va-section">
+<div class="va-row"><input type="checkbox" class="va-chk" id="vaOn" onchange="rc()"><span class="va-lbl">VA Loan (apply VA funding fee)</span></div>
+<div id="vaOpts" style="display:none;margin-top:4px;">
+<div class="va-row"><select class="va-sel" id="vaType" onchange="rc()"><option value="0">Exempt (0.00%)</option><option value="0.5">IRRRL (0.50%)</option><option value="2.15">Cash-Out First Use (2.15%)</option><option value="3.3">Cash-Out Subsequent (3.30%)</option><option value="custom">Custom %</option></select></div>
+<div class="va-row" id="vaCustomRow" style="display:none;"><input class="ccr-inp" id="vaCustomPct" placeholder="0" oninput="rc()" style="width:50px;"><span class="pct">%</span></div>
+<div class="va-fee-d" id="vaFeeD"></div>
+</div></div>
+</div>
+
+<div class="bc"><div class="bct">Debts to Be Paid Off With This Loan</div>
+<table class="dt"><thead><tr><th>Creditor</th><th style="width:90px">Balance</th><th style="width:90px">Monthly Payment</th><th style="width:24px"></th></tr></thead><tbody id="dB"></tbody></table>
+<button class="d-add" onclick="addD()">+ Add</button>
+<div class="d-tots"><div>Total Debt Being Paid Off: <b id="dTB">$0</b></div><div>Total Monthly Payments Eliminated: <b id="dTP">$0</b></div></div></div>
+</div>
+
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right">
+<div class="tabs"><div class="tab on" onclick="stab('email',this)">Email</div><div class="tab" onclick="stab('sms',this)">SMS</div><div class="tab" onclick="stab('crm',this)">CRM</div></div>
+<div class="tc">
+<div class="tp on" id="p-email"><textarea class="draft" id="dE" placeholder="Email draft..."></textarea></div>
+<div class="tp" id="p-sms"><textarea class="draft" id="dS" placeholder="SMS draft..."></textarea></div>
+<div class="tp" id="p-crm"><textarea class="draft" id="dC" placeholder="CRM notes..."></textarea></div>
+</div>
+<div class="tbar">
+<button class="tb tb-a" onclick="regen()">Regenerate</button>
+<button class="tb" id="cpyBtn" onclick="cpyCur()">Copy</button>
+<button class="tb tb-o" onclick="openOutlook()">Open in Outlook</button>
+<button class="tb" onclick="emailSelf()">Email to Myself</button>
+</div>
+</div>
+</div>
+
+<script>
+const $=id=>document.getElementById(id),pn=v=>parseFloat(String(v).replace(/[^0-9.\-]/g,''))||0,fd=n=>n===0?'$0':'$'+Math.round(n).toLocaleString('en-US');
+function PMT(r,n,pv){if(!r||!n)return 0;return pv*(r*Math.pow(1+r,n))/(Math.pow(1+r,n)-1);}
+
+// Timer
+let ti=null,ts=0,tS=false;
+function startT(){if(ti)return;ti=setInterval(()=>{ts++;$('tmr').textContent=Math.floor(ts/60)+':'+String(ts%60).padStart(2,'0');$('tmr').classList.add('on');},1000);}
+document.addEventListener('input',e=>{if(!tS&&!e.target.classList.contains('draft')){tS=true;startT();}});
+
+// Dirty tracking
+let dirty={email:false,sms:false,crm:false},aTab='email',bestStar=null;
+$('dE').addEventListener('input',()=>{dirty.email=true;});
+$('dS').addEventListener('input',()=>{dirty.sms=true;});
+$('dC').addEventListener('input',()=>{dirty.crm=true;});
+
+// CC mode
+let ccMode='pct';
+function togCC(){ccMode=ccMode==='pct'?'flat':'pct';$('ccTog').textContent=ccMode==='pct'?'%':'$';rc();}
+
+// Star
+function togStar(el){const p=el.dataset.p;if(bestStar===p){bestStar=null;}else{bestStar=p;}document.querySelectorAll('.star').forEach(s=>{s.textContent=s.dataset.p===bestStar?'★':'☆';s.classList.toggle('on',s.dataset.p===bestStar);});rc();}
+
+// Tabs
+function stab(t,el){document.querySelectorAll('.tab').forEach(e=>e.classList.remove('on'));document.querySelectorAll('.tp').forEach(e=>e.classList.remove('on'));el.classList.add('on');$('p-'+t).classList.add('on');aTab=t;}
+
+// New call
+function newCall(){clearInterval(ti);ti=null;ts=0;tS=false;$('tmr').textContent='0:00';$('tmr').classList.remove('on');
+const dv={ccVal:'2.5',ccEscMo:'3',hlnT:'30',hloT:'10',cnvT:'30',fhaT:'30'};
+document.querySelectorAll('input:not([type=checkbox]),textarea,select').forEach(e=>{if(e.classList.contains('draft'))e.value='';else if(e.tagName==='SELECT')e.selectedIndex=0;else e.value=dv[e.id]||'';});
+document.querySelectorAll('.pchk').forEach(e=>{e.checked=e.id==='chkCnv';});
+$('vaOn').checked=false;bestStar=null;document.querySelectorAll('.star').forEach(s=>{s.textContent='☆';s.classList.remove('on');});
+$('dB').innerHTML='';dirty={email:false,sms:false,crm:false};rc();}
+
+// Debts
+function addD(){const tr=document.createElement('tr');tr.innerHTML='<td><input placeholder="Creditor" oninput="calcD()"></td><td><input placeholder="0" oninput="calcD()"></td><td><input placeholder="0" oninput="calcD()"></td><td><button class="dt-rm" onclick="this.closest(\'tr\').remove();calcD();">✕</button></td>';$('dB').appendChild(tr);}
+function calcD(){let tp=0,tb=0;document.querySelectorAll('#dB tr').forEach(tr=>{const i=tr.querySelectorAll('input');tb+=pn(i[1].value);tp+=pn(i[2].value);});$('dTP').textContent=fd(tp);$('dTB').textContent=fd(tb);rc();}
+function getD(){const d=[];document.querySelectorAll('#dB tr').forEach(tr=>{const i=tr.querySelectorAll('input');d.push({name:i[0].value,bal:pn(i[1].value),pmt:pn(i[2].value)});});return d;}
+function hasItem(){return document.querySelectorAll('#dB tr').length>0;}
+function getDP(){if(hasItem()){let t=0;document.querySelectorAll('#dB tr').forEach(tr=>{t+=pn(tr.querySelectorAll('input')[2].value);});return t;}return pn($('cDP').value);}
+
+// MAIN CALC
+function rc(){
+// Debt priority UI
+const it=hasItem();
+$('cDP').classList.toggle('inp-dis',it);$('cDP').readOnly=it;
+$('dpHint').style.display=it?'block':'none';
+$('dpLbl').textContent=it?'Est. Monthly Debt':'Est. Monthly Debt';
+
+// VA opts
+$('vaOpts').style.display=$('vaOn').checked?'block':'none';
+$('vaCustomRow').style.display=$('vaType').value==='custom'?'flex':'none';
+
+const co=pn($('cCO').value),dp=getDP(),bal=pn($('cBal').value),mp=pn($('cMP').value),esc=pn($('cEsc').value),hv=pn($('cHV').value);
+
+// LTV
+if(hv>0){const l=bal/hv*100,cl=(bal+co)/hv*100;$('dLTV').textContent=l.toFixed(1)+'%';$('dLTV').className='lv '+(l<=80?'lv-ok':l<=95?'lv-w':'lv-b');$('dCLTV').textContent=cl.toFixed(1)+'%';$('dCLTV').className='lv '+(cl<=80?'lv-ok':cl<=90?'lv-w':'lv-b');}else{$('dLTV').textContent=$('dCLTV').textContent='-';$('dLTV').className=$('dCLTV').className='lv';}
+
+// Global CC
+const ccv=pn($('ccVal').value),escMo=pn($('ccEscMo').value);
+const loanBase=bal+co;
+const ccDollar=ccMode==='pct'?loanBase*(ccv/100):ccv;
+const escDollar=esc*escMo;
+$('ccOut').textContent=fd(ccDollar);$('ccEscOut').textContent=fd(escDollar);
+const ccRefiTot=ccDollar+escDollar;
+$('ccT').textContent=fd(ccRefiTot);
+
+// VA fee (only on VA & Conv card)
+let vaFeePct=0,vaFee=0;
+if($('vaOn').checked){const vt=$('vaType').value;vaFeePct=vt==='custom'?(parseFloat($('vaCustomPct').value)||0):parseFloat(vt);}
+const vaBase=bal+co+ccDollar+escDollar;
+vaFee=vaBase*(vaFeePct/100);
+$('vaFeeD').textContent=$('vaOn').checked?'Funding fee: '+fd(vaFee)+' ('+vaFeePct.toFixed(2)+'%)':'';
+
+const cur=mp+dp;
+
+// HEL: cashout + CC only (no escrow)
+const hlT=pn($('hlnT').value),hlR=parseFloat($('hlnR').value)||0;
+const hlL=co+ccDollar;$('hlnLA').textContent=fd(hlL);
+let hlP=0,hlTot=0;if(hlL>0&&hlR>0&&hlT>0){hlP=PMT(hlR/100/12,hlT*12,hlL);hlTot=hlP+mp;}
+$('hlnP').textContent=hlP>0?fd(hlP):'-';$('hlnTot').textContent=hlTot>0?fd(hlTot):'-';const hlS=hlTot>0?-(hlTot-cur):null;
+
+// HELOC: cashout + CC only (no escrow), IO
+const hoT=pn($('hloT').value),hoR=parseFloat($('hloR').value)||0;
+const hoL=co+ccDollar;$('hloLA').textContent=fd(hoL);
+let hoP=0,hoTot=0;if(hoL>0&&hoR>0){hoP=hoL*(hoR/100/12);hoTot=hoP+mp;}
+$('hloP').textContent=hoP>0?fd(hoP):'-';$('hloTot').textContent=hoTot>0?fd(hoTot):'-';const hoS=hoTot>0?-(hoTot-cur):null;
+
+// VA & Conv Refi: bal+co+cc+esc+vaFee
+const cT=pn($('cnvT').value),cR=parseFloat($('cnvR').value)||0;
+const cL=bal+co+ccDollar+escDollar+vaFee;$('cnvLA').textContent=fd(cL);
+let cP=0,cTot=0;if(cL>0&&cR>0&&cT>0){cP=PMT(cR/100/12,cT*12,cL);cTot=cP+esc;}
+$('cnvP').textContent=cP>0?fd(cP):'-';$('cnvTot').textContent=cTot>0?fd(cTot):'-';const cS=cTot>0?-(cTot-cur):null;
+
+// FHA: (bal+co+cc+esc)*1.0175, NO VA fee
+const fT=pn($('fhaT').value),fR=parseFloat($('fhaR').value)||0;
+const fB=bal+co+ccDollar+escDollar,fL=fB*1.0175;$('fhaLA').textContent=fd(fL);
+let fP=0,fTot=0;if(fL>0&&fR>0&&fT>0){fP=PMT(fR/100/12,fT*12,fL)+(fB*0.005)/12;fTot=fP+esc;}
+$('fhaP').textContent=fP>0?fd(fP):'-';$('fhaTot').textContent=fTot>0?fd(fTot):'-';const fS=fTot>0?-(fTot-cur):null;
+
+function showS(el,v){if(v===null){el.textContent='-';el.className='pfs-v';return;}el.textContent=(v>0?'+':'')+fd(v)+'/mo';el.className='pfs-v '+(v>0?'sv-p':'sv-n');}
+showS($('sHln'),hlS);showS($('sHlo'),hoS);showS($('sCnv'),cS);showS($('sFha'),fS);
+
+// Best calc highlight
+document.querySelectorAll('.prod').forEach(e=>e.classList.remove('best-calc'));
+const vs=[{el:'pHln',v:hlS},{el:'pHlo',v:hoS},{el:'pCnv',v:cS},{el:'pFha',v:fS}].filter(x=>x.v!==null&&x.v>0);
+if(vs.length>0){vs.sort((a,b)=>b.v-a.v);$(vs[0].el).classList.add('best-calc');}
+
+window._c={co,dp,bal,mp,esc,hv,hlR,hlT,hlP,hlTot,hlS,hlL,hoR,hoT,hoP,hoTot,hoS,hoL,cR,cT,cP,cTot,cS,cL,ccDollar,escDollar,ccRefiTot,vaFee,vaFeePct,fR,fT,fP,fTot,fS,fL,fB};
+if(!dirty.email||!dirty.sms||!dirty.crm)out();
+}
+
+function getCnvName(){return $('vaOn').checked?'VA Refinance':'Conventional Refinance';}
+function getCnvDesc(){return $('vaOn').checked?'Replaces your current mortgage with a new VA loan.':'Replaces your current mortgage with a new mortgage.';}
+
+function pi(p,c){
+if(p==='hln')return{n:'Fixed Rate Home Equity Loan',desc:'Adds a fixed second mortgage. Main mortgage stays the same.',r:c.hlR,t:c.hlT,pm:c.hlP,tot:c.hlTot,sv:c.hlS,la:c.hlL,is2nd:true,isHeloc:false};
+if(p==='hlo')return{n:'HELOC',desc:'Adds a flexible credit line. Main mortgage stays the same.',r:c.hoR,t:c.hoT,pm:c.hoP,tot:c.hoTot,sv:c.hoS,la:c.hoL,is2nd:true,isHeloc:true};
+if(p==='cnv')return{n:getCnvName(),desc:getCnvDesc(),r:c.cR,t:c.cT,pm:c.cP,tot:c.cTot,sv:c.cS,la:c.cL,is2nd:false,isHeloc:false};
+if(p==='fha')return{n:'FHA Refinance',desc:'Replaces current mortgage with a new FHA loan.',r:c.fR,t:c.fT,pm:c.fP,tot:c.fTot,sv:c.fS,la:c.fL,is2nd:false,isHeloc:false};
+return null;}
+
+function out(){
+const c=window._c||{},nm=$('cNm').value||'[Name]';
+let chk=[];if($('chkHln').checked)chk.push('hln');if($('chkHlo').checked)chk.push('hlo');if($('chkCnv').checked)chk.push('cnv');if($('chkFha').checked)chk.push('fha');
+if(chk.length===0)chk=['cnv'];
+// Starred first
+if(bestStar&&chk.includes(bestStar)){chk=chk.filter(k=>k!==bestStar);chk.unshift(bestStar);}
+
+// Benefit sentence
+const prods=chk.map(p=>({k:p,...pi(p,c)})).filter(p=>p&&p.tot>0);
+const bestP=prods[0]||null;
+let bene='';
+if(bestP){
+const sv=bestP.sv||0;
+if(sv>0&&c.co>0&&c.dp>0)bene='This plan gives you '+fd(c.co)+' to wipe out debt and lowers your total monthly payments by about '+fd(sv)+' from where they are today'+(bestP.is2nd?', all without touching your current mortgage.':', all under one simple fixed loan.');
+else if(sv>0&&c.co>0)bene='This would lower your payment by about '+fd(sv)+' and free up some cash each month.';
+else if(sv>0)bene='This would lower your monthly payments by about '+fd(sv)+'.';
+else if(c.co>0)bene='This would give you access to roughly '+fd(c.co)+'.';
+}
+
+// === EMAIL ===
+if(!dirty.email){
+const multi=chk.filter(k=>{const p=pi(k,c);return p&&p.tot>0;}).length>1;
+let e=[];
+e.push('Hey '+nm+',');
+e.push('');
+if(multi)e.push('Good talking with you. Here are the options we went over.');
+else e.push('Good talking with you. Here is what we went over.');
+if(bene){e.push('');e.push(bene);}
+if(multi){
+const has2=chk.some(k=>{const p=pi(k,c);return p&&p.is2nd;});
+const hasR=chk.some(k=>{const p=pi(k,c);return p&&!p.is2nd;});
+if(has2&&hasR){e.push('');e.push('The main difference is whether we replace your current mortgage or leave it in place.');}
+}
+e.push('');
+
+let optN=0;
+chk.forEach(k=>{
+const p=pi(k,c);if(!p||p.tot<=0)return;
+optN++;
+const rs=p.r>0?p.r.toFixed(3)+'%':'-';
+const isBest=k===bestStar;
+const bestTag=isBest?' (best overall option)':'';
+const label=multi?'Option '+optN+' - ':'';
+
+e.push(label+p.n+bestTag);
+e.push(p.desc);
+e.push('');
+
+if(p.isHeloc){
+e.push('Rate: '+rs+' (variable based on the Prime Rate)');
+e.push('Monthly payment (interest-only): '+fd(p.pm)+' + '+fd(c.mp)+' on your current mortgage');
+e.push('Total monthly housing: '+fd(p.tot));
+}else if(p.is2nd){
+e.push('Rate: '+rs);
+e.push('Term: '+p.t+'-year fixed');
+e.push('Monthly payment: '+fd(p.pm)+' + '+fd(c.mp)+' on your current mortgage');
+e.push('Total monthly housing: '+fd(p.tot));
+}else{
+e.push('Rate: '+rs);
+e.push('Term: '+p.t+'-year fixed');
+e.push('Monthly payment: '+fd(p.tot));
+e.push('');
+e.push('Skip 1 or 2 mortgage payments after closing');
+}
+e.push('');
+e.push('$0 due at closing - closing costs are rolled into the new loan');
+if(p.is2nd||p.isHeloc){}// no skip for 2nd
+e.push('Takes about 2 weeks to complete');
+e.push('');
+});
+
+e.push("These numbers are estimates for now. I'll confirm exact figures as we get the ball rolling.");
+e.push('');
+e.push('The only possible out-of-pocket cost could be an appraisal, around $600. We will know more once I review your file.');
+e.push('');
+e.push('Next step is a quick 5-minute form so I can put together the details:');
+e.push('https://harrycarwile.my1003app.com/register');
+e.push('');
+e.push('It is a soft check only and will not affect your credit score.');
+e.push('');
+e.push('Call or text me directly at 704-307-4482 if you have questions.');
+$('dE').value=e.join('\n');
+}
+
+// === SMS ===
+if(!dirty.sms){
+$('dS').value='Hey '+nm+', this is Harry from Loan Pronto. Just sent you an email with the numbers we talked about. Check spam if you do not see it. Text me here with any questions.';
+}
+
+// === CRM (internal notes NEVER included per spec) ===
+if(!dirty.crm){
+let cr=[];cr.push('LEAD: '+nm);
+const gl=$('cGl').value;if(gl)cr.push('Goals: '+gl);
+const w2=$('cW2').value;if(w2)cr.push('Employment: '+w2);
+if(c.hv>0)cr.push('Home Value: '+fd(c.hv));if(c.bal>0)cr.push('Mortgage Balance: '+fd(c.bal));
+if(c.mp>0)cr.push('Current Payment: '+fd(c.mp)+' (escrow: '+fd(c.esc)+')');
+if(c.co>0)cr.push('Cash Out: '+fd(c.co));if(c.dp>0)cr.push('Debt Payments: '+fd(c.dp));
+const lv=c.hv>0?(c.bal/c.hv*100).toFixed(1)+'%':'-';cr.push('LTV: '+lv);
+cr.push('','--- Products ---');
+if(c.hlR>0)cr.push('HEL: '+c.hlR.toFixed(3)+'%/'+c.hlT+'yr | '+fd(c.hlTot)+'/mo | '+(c.hlS>0?'+':'')+fd(c.hlS));
+if(c.hoR>0)cr.push('HELOC: '+c.hoR.toFixed(3)+'%/'+c.hoT+'yr | '+fd(c.hoTot)+'/mo | '+(c.hoS>0?'+':'')+fd(c.hoS));
+if(c.cR>0)cr.push(getCnvName()+': '+c.cR.toFixed(3)+'%/'+c.cT+'yr | '+fd(c.cTot)+'/mo | '+(c.cS>0?'+':'')+fd(c.cS));
+if(c.fR>0)cr.push('FHA: '+c.fR.toFixed(3)+'%/'+c.fT+'yr | '+fd(c.fTot)+'/mo | '+(c.fS>0?'+':'')+fd(c.fS));
+if(c.ccRefiTot>0)cr.push('Closing Costs: '+fd(c.ccRefiTot));
+if(c.vaFee>0)cr.push('VA Funding Fee: '+fd(c.vaFee));
+const debts=getD().filter(d=>d.name);
+if(debts.length>0)cr.push('','Debts: '+debts.map(d=>d.name+' '+fd(d.bal)+' ('+fd(d.pmt)+'/mo)').join(', '));
+cr.push('','Pitched: '+chk.map(k=>{const p=pi(k,c);return p?p.n:'';}).join(' + '));
+$('dC').value=cr.join('\n');
+}}
+
+function regen(){dirty={email:false,sms:false,crm:false};out();}
+
+async function cpyCur(){const map={email:'dE',sms:'dS',crm:'dC'};const t=$(map[aTab]).value;try{await navigator.clipboard.writeText(t);}catch(e){const a=document.createElement('textarea');a.value=t;document.body.appendChild(a);a.select();document.execCommand('copy');document.body.removeChild(a);}const b=$('cpyBtn');b.classList.add('ok');b.textContent='Copied';setTimeout(()=>{b.classList.remove('ok');b.textContent='Copy';},1200);}
+
+function openOutlook(){const em=$('cEm').value||'';const subj=encodeURIComponent('Loan Options - Loan Pronto');const body=encodeURIComponent($('dE').value);window.location.href='mailto:'+em+'?subject='+subj+'&body='+body;}
+
+function emailSelf(){
+const c=window._c||{},nm=$('cNm').value||'[Name]',gl=$('cGl').value||'',w2=$('cW2').value||'',nt=$('cNt').value||'';
+let s=[];s.push('CO-PILOT DEAL SUMMARY','========================','');
+s.push('CLIENT: '+nm);
+const em=$('cEm').value;if(em)s.push('Email: '+em);
+if(gl)s.push('Goals: '+gl);if(w2)s.push('Employment: '+w2);
+s.push('','PROPERTY & MORTGAGE');
+s.push('Home Value: '+fd(c.hv));s.push('Mortgage Balance: '+fd(c.bal));
+s.push('Current Payment (w/ escrow): '+fd(c.mp));s.push('Escrow/mo: '+fd(c.esc));
+const lv=c.hv>0?(c.bal/c.hv*100).toFixed(1)+'%':'-',clv=c.hv>0?((c.bal+c.co)/c.hv*100).toFixed(1)+'%':'-';
+s.push('LTV: '+lv+' | CLTV: '+clv);
+s.push('','CASH & DEBT');s.push('Cash Out: '+fd(c.co));s.push('Monthly Debt Payments: '+fd(c.dp));
+const debts=getD().filter(d=>d.name);
+if(debts.length>0){s.push('');s.push('Itemized Debts:');debts.forEach(d=>s.push('  '+d.name+': '+fd(d.bal)+' bal, '+fd(d.pmt)+'/mo'));}
+s.push('','LOAN OPTIONS','------------------------');
+if(c.hlR>0){s.push('Fixed Rate Home Equity Loan');s.push('  Rate: '+c.hlR.toFixed(3)+'% | Term: '+c.hlT+'yr');s.push('  Loan: '+fd(c.hlL)+' | Pmt: '+fd(c.hlP));s.push('  Total Housing: '+fd(c.hlTot)+' | Savings: '+(c.hlS>0?'+':'')+fd(c.hlS)+'/mo');s.push('');}
+if(c.hoR>0){s.push('HELOC');s.push('  Rate: '+c.hoR.toFixed(3)+'% | Term: '+c.hoT+'yr');s.push('  Loan: '+fd(c.hoL)+' | IO Pmt: '+fd(c.hoP));s.push('  Total Housing: '+fd(c.hoTot)+' | Savings: '+(c.hoS>0?'+':'')+fd(c.hoS)+'/mo');s.push('');}
+if(c.cR>0){s.push(getCnvName());s.push('  Rate: '+c.cR.toFixed(3)+'% | Term: '+c.cT+'yr');s.push('  Loan: '+fd(c.cL)+' | P&I: '+fd(c.cP));s.push('  Total Pmt: '+fd(c.cTot)+' | Savings: '+(c.cS>0?'+':'')+fd(c.cS)+'/mo');if(c.vaFee>0)s.push('  VA Funding Fee: '+fd(c.vaFee));s.push('');}
+if(c.fR>0){s.push('FHA Refinance');s.push('  Rate: '+c.fR.toFixed(3)+'% | Term: '+c.fT+'yr');s.push('  Loan: '+fd(c.fL)+' | P&I+MI: '+fd(c.fP));s.push('  Total Pmt: '+fd(c.fTot)+' | Savings: '+(c.fS>0?'+':'')+fd(c.fS)+'/mo');s.push('');}
+s.push('CLOSING COSTS');s.push('Estimated CC: '+fd(c.ccDollar));s.push('Escrow Collection: '+fd(c.escDollar));s.push('Total (Refi): '+fd(c.ccRefiTot));
+if(c.vaFee>0)s.push('VA Funding Fee: '+fd(c.vaFee)+' ('+c.vaFeePct.toFixed(2)+'%)');
+if(nt){s.push('','INTERNAL NOTES');s.push(nt);}
+let chk=[];if($('chkHln').checked)chk.push('hln');if($('chkHlo').checked)chk.push('hlo');if($('chkCnv').checked)chk.push('cnv');if($('chkFha').checked)chk.push('fha');
+s.push('','Pitched: '+chk.map(k=>{const p=pi(k,c);return p?p.n:'';}).join(' + '));
+window.location.href='mailto:?subject='+encodeURIComponent('Co-Pilot Summary: '+nm)+'&body='+encodeURIComponent(s.join('\n'));
+}
+
+rc();
+</script>
+</body></html>
