@@ -256,7 +256,8 @@ if(hv>0){const l=bal/hv*100,cl=(bal+co)/hv*100;$('dLTV').textContent=l.toFixed(1
 // Global CC
 const ccv=pn($('ccVal').value),escMo=pn($('ccEscMo').value);
 const loanBase=bal+co;
-const ccDollar=ccMode==='pct'?loanBase*(ccv/100):ccv;
+const ccDollar=ccMode==='pct'?loanBase*(ccv/100):ccv;   // Refi CC base = bal + co
+const cc2nd=ccMode==='pct'?(co*(ccv/100)):ccv;          // 2nd CC base = cash out only
 const escDollar=esc*escMo;
 $('ccOut').textContent=fd(ccDollar);$('ccEscOut').textContent=fd(escDollar);
 const ccRefiTot=ccDollar+escDollar;
@@ -273,7 +274,7 @@ const cur=mp+dp;
 
 // HEL: cashout + CC only (no escrow)
 const hlT=pn($('hlnT').value),hlR=parseFloat($('hlnR').value)||0;
-const hlL=co+ccDollar;$('hlnLA').textContent=fd(hlL);
+const hlL=co+cc2nd;$('hlnLA').textContent=fd(hlL);
 let hlP=0,hlTot=0;if(hlL>0&&hlR>0&&hlT>0){hlP=PMT(hlR/100/12,hlT*12,hlL);hlTot=hlP+mp;}
 $('hlnP').textContent=hlP>0?fd(hlP):'-';$('hlnTot').textContent=hlTot>0?fd(hlTot):'-';const hlS=hlTot>0?-(hlTot-cur):null;
 
