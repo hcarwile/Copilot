@@ -362,8 +362,7 @@ const isBest=k===bestStar;
 const bestTag=isBest?' (best overall option)':'';
 const label=multi?'Option '+optN+' - ':'';
 
-e.push(label+p.n+bestTag);
-e.push(p.desc);
+e.push(label+p.n+bestTag+' — '+p.desc);
 e.push('');
 
 if(p.isHeloc){
