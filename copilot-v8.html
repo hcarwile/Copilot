@@ -248,8 +248,19 @@ $('dpLbl').textContent=it?'Est. Monthly Debt':'Est. Monthly Debt';
 $('vaOpts').style.display=$('vaOn').checked?'block':'none';
 $('vaCustomRow').style.display=$('vaType').value==='custom'?'flex':'none';
 
-const co=pn($('cCO').value),dp=getDP(),bal=pn($('cBal').value),mp=pn($('cMP').value),esc=pn($('cEsc').value),hv=pn($('cHV').value);
+const coInput = pn($('cCO').value);
 
+// total debt balances entered below
+let debtBal = 0;
+document.querySelectorAll('#dB tr').forEach(tr=>{
+  const i = tr.querySelectorAll('input');
+  debtBal += pn(i[1].value); // balance column
+});
+
+// if cashout blank but debts entered → treat as debt wipe
+const co = coInput > 0 ? coInput : (debtBal > 0 ? debtBal : 0);
+
+const dp=getDP(),bal=pn($('cBal').value),mp=pn($('cMP').value),esc=pn($('cEsc').value),hv=pn($('cHV').value);
 // LTV
 if(hv>0){const l=bal/hv*100,cl=(bal+co)/hv*100;$('dLTV').textContent=l.toFixed(1)+'%';$('dLTV').className='lv '+(l<=80?'lv-ok':l<=95?'lv-w':'lv-b');$('dCLTV').textContent=cl.toFixed(1)+'%';$('dCLTV').className='lv '+(cl<=80?'lv-ok':cl<=90?'lv-w':'lv-b');}else{$('dLTV').textContent=$('dCLTV').textContent='-';$('dLTV').className=$('dCLTV').className='lv';}
 
