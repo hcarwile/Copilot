@@ -354,17 +354,15 @@ if (bestP) {
     bene =
       'This plan gives you about ' + fd(c.debtBal) +
       ' to wipe out debt and another ' + fd(c.extraCash) +
-      ' back in your pocket, while lowering your total monthly payments by about ' + fd(sv) +
-      ' from where they are today' +
-      (bestP.is2nd ? ', all without touching your current mortgage.' : ', all under one simple fixed loan.');
+      ' back in your pocket. It also lowers your total monthly payments by about ' + fd(sv) +
+      (bestP.is2nd ? '- all without touching your current mortgage.' : '- all under one simple fixed loan.');
   }
   // Debt payoff only (cashout blank but debts entered, OR cashout equals debts)
   else if (sv > 0 && hasDebtPayoff && (hasCashOutInput || !hasCashOutInput)) {
     bene =
       'This plan gives you about ' + fd(c.debtBal) +
       ' to wipe out debt and lowers your total monthly payments by about ' + fd(sv) +
-      ' from where they are today' +
-      (bestP.is2nd ? ', all without touching your current mortgage.' : ', all under one simple fixed loan.');
+      (bestP.is2nd ? '- all without touching your current mortgage.' : '- all under one simple fixed loan.');
   }
   // Cash out, no itemized debts
   else if (sv > 0 && (c.co || 0) > 0) {
@@ -433,7 +431,7 @@ e.push("These numbers are very close estimates. I’ll confirm exact figures onc
 e.push('');
 e.push('The only possible out-of-pocket cost would be the appraisal (usually around $600). We’ll confirm that upfront.');
 e.push('');
-e.push('If this looks in line with what you were thinking, next step is to fill out the quick 5-minute form below so I can lock everything in:');
+e.push('If this looks in line with what we discussed, next step is to fill out the quick 5-minute form below so I can lock everything in:');
 e.push('https://harrycarwile.my1003app.com/register');
 e.push('');
 e.push('It is a soft check only and will not affect your credit score.');
