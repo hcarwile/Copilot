@@ -342,11 +342,30 @@ const prods=chk.map(p=>({k:p,...pi(p,c)})).filter(p=>p&&p.tot>0);
 const bestP=prods[0]||null;
 let bene='';
 if(bestP){
-const sv=bestP.sv||0;
-if(sv>0&&c.co>0&&c.dp>0)bene='This plan gives you '+fd(c.co)+' to wipe out debt and lowers your total monthly payments by about '+fd(sv)+' from where they are today'+(bestP.is2nd?', all without touching your current mortgage.':', all under one simple fixed loan.');
-else if(sv>0&&c.co>0)bene='This plan lowers your payment by about '+fd(sv)+' and free up some cash each month.';
-else if(sv>0)bene='This plan lowers your monthly payments by about '+fd(sv)+'.';
-else if(c.co>0)bene='This plan would give you access to roughly '+fd(c.co)+'.';
+const sv = bestP.sv || 0;
+const debtBal = c.debtBal || 0;
+const coInput = c.coInput || 0;
+const extra = c.extraCash || 0;
+
+if (sv > 0 && debtBal > 0) {
+  if (extra > 0) {
+    bene = 'This plan pays off about ' + fd(debtBal) +
+           ' of debt, puts roughly ' + fd(extra) +
+           ' back in your pocket, and lowers your total monthly payments by about ' +
+           fd(sv) + ' from where they are today' +
+           (bestP.is2nd ? ', without touching your current mortgage.' : ', all under one simple fixed loan.');
+  } else {
+    bene = 'This plan pays off about ' + fd(debtBal) +
+           ' of debt and lowers your total monthly payments by about ' +
+           fd(sv) + ' from where they are today' +
+           (bestP.is2nd ? ', without touching your current mortgage.' : ', all under one simple fixed loan.');
+  }
+} else if (sv > 0 && coInput > 0) {
+  bene = 'This would lower your payment by about ' + fd(sv) + ' and free up some cash each month.';
+} else if (sv > 0) {
+  bene = 'This would lower your monthly payments by about ' + fd(sv) + '.';
+} else if (coInput > 0) {
+  bene = 'This would give you access to roughly ' + fd(coInput) + '.';
 }
 
 // === EMAIL ===
