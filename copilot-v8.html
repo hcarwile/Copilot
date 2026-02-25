@@ -355,14 +355,14 @@ if (bestP) {
       'This plan gives you about ' + fd(c.debtBal) +
       ' to wipe out debt and another ' + fd(c.extraCash) +
       ' back in your pocket. It lowers your total monthly payments by about ' + fd(sv) +
-      (bestP.is2nd ? '- all without touching your current mortgage.' : ' - all under one simple fixed loan.');
+      (bestP.is2nd ? ' - all without touching your current mortgage.' : ' - all under one simple fixed loan.');
   }
   // Debt payoff only (cashout blank but debts entered, OR cashout equals debts)
   else if (sv > 0 && hasDebtPayoff && (hasCashOutInput || !hasCashOutInput)) {
     bene =
       'This plan gives you about ' + fd(c.debtBal) +
       ' to wipe out debt and lowers your total monthly payments by about ' + fd(sv) +
-      (bestP.is2nd ? '- all without touching your current mortgage.' : ' - all under one simple fixed loan.');
+      (bestP.is2nd ? ' - all without touching your current mortgage.' : ' - all under one simple fixed loan.');
   }
   // Cash out, no itemized debts
   else if (sv > 0 && (c.co || 0) > 0) {
@@ -390,7 +390,7 @@ if(bene){e.push('');e.push(bene);}
 if(multi){
 const has2=chk.some(k=>{const p=pi(k,c);return p&&p.is2nd;});
 const hasR=chk.some(k=>{const p=pi(k,c);return p&&!p.is2nd;});
-if(has2&&hasR){e.push('');e.push('The main difference is whether we replace your current mortgage or leave it in place.');}
+if(has2&&hasR){e.push('');e.push('The main difference between these options is whether we replace your current mortgage or leave it in place.');}
 }
 e.push('');
 
