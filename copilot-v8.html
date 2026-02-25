@@ -366,7 +366,7 @@ if (bestP) {
   }
   // Cash out, no itemized debts
   else if (sv > 0 && (c.co || 0) > 0) {
-    bene = 'This plan lowers your payment by about ' + fd(sv) + ' and puts cash in your pocket.';
+    bene = 'This plan lowers your payment by about ' + fd(sv) + ' and puts ' + fd(c.co) + '.' in your pocket.';
   }
   // Pure rate/term improvement
   else if (sv > 0) {
